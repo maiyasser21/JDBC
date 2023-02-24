@@ -1,29 +1,42 @@
 package jdbcone;
- import java.sql.*;
 
-public class Main{
+import java.sql.*;
+
+public class Main {
     public static void main(String[] args) {
+
+        ContactDAO c1 = new ContactDAO();
+        System.out.println("DB!");
+        try{
+        c1.Connect();
+        }catch(SQLException s)
+        {
+            System.out.println(s.getMessage());
+        }
+   //     c1.Update();
+// c1.DeletefromTable();
+            
         ContactPerson p=new ContactPerson();
         
-        p.setId(1);
-        p.setName("peter parker");
-        p.setNickName("spiderman");
-        p.setAddress("newwork");
-        p.setHomePhone("01111");
+        p.setId(12);
+        p.setName("mai");
+        p.setNickName("dude");
+        p.setAddress("NasrCity");
+        p.setHomePhone("4568788");
         p.setCellPhone("333");
-        p.setWorkPhone("spidey");
-        p.setEmail("spidey@gmail.com");
-        p.setWebSite("spidey.com");
-        p.setProfession("spider man");
+        p.setWorkPhone("0098799");
+        p.setEmail("mai@gmail.com");
+        p.setWebSite("dude.com");
+        p.setProfession("suffering..");
         
-        ContactDAO testDB=new ContactDAO();
-        
-        testDB.Insert(p);
-        testDB.getContacts().forEach((s)->{
-        System.out.println(s.getId()+""+s.getName()+""+s.getProfession());
+        c1.Insert(p);
+
+        c1.Select().forEach((s)->{
+        System.out.println(s.getId()+"\t"+s.getName()+"\t"+s.getNickName());
         });
-        
-        testDB.closeConnection();
-        
+
+      
+     c1.closeConnection();
+     
     }
 }

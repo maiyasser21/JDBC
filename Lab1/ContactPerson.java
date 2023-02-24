@@ -2,6 +2,7 @@ package jdbcone;
 
 import java.sql.Date;
 
+//id, name, nick_name, address, home_phone, work_phone, cell_phone, email, birthday, web_site, profession
 public class ContactPerson
 {
    private int id;
@@ -16,6 +17,26 @@ public class ContactPerson
     private String WebSite;
     private String Profession;
     
+       public ContactPerson() {
+    }
+    
+
+    public ContactPerson(int id, String Name, String NickName, String Address, String HomePhone, String WorkPhone, String CellPhone, String Email, Date Birthday, String WebSite, String Profession) {
+        this.id = id;
+        this.Name = Name;
+        this.NickName = NickName;
+        this.Address = Address;
+        this.HomePhone = HomePhone;
+        this.WorkPhone = WorkPhone;
+        this.CellPhone = CellPhone;
+        this.Email = Email;
+        this.Birthday = Birthday;
+        this.WebSite = WebSite;
+        this.Profession = Profession;
+    }
+
+ 
+    
     public void setId(int id)
     {
         this.id=id;
@@ -28,10 +49,11 @@ public class ContactPerson
     {
         this.NickName=nickname;
     }
-    public void setEmail(String email)
+      public void setAddress(String ad)
     {
-        this.Email=email;
+        this.Address=ad;
     }
+    
     public void setHomePhone(String hp)
     {
         this.HomePhone=hp;
@@ -44,23 +66,26 @@ public class ContactPerson
     {
         this.CellPhone=cp;
     }
+    public void setEmail(String email)
+    {
+        this.Email=email;
+    }
     public void setBD(Date bd)
     {
         this.Birthday=bd;
+    }
+     public void setWebSite(String ws)
+    {
+        this.WebSite=ws;
     }
     public void setProfession(String prof)
     {
         this.Profession=prof;
     }
-    public void setWebSite(String ws)
-    {
-        this.WebSite=ws;
-    }
-    public void setAddress(String ad)
-    {
-        this.Address=ad;
-    }
+   
+   
     ////////////////////////////////
+    //id, name, nick_name, address, home_phone, work_phone, cell_phone, email, birthday, web_site, profession
     public int getId()
     {
         return id;
@@ -72,6 +97,10 @@ public class ContactPerson
     public String getNickName()
     {
         return NickName;
+    }
+     public String getAddress()
+    {
+        return Address;
     }
     public String getHomePhone()
     {
@@ -89,18 +118,16 @@ public class ContactPerson
     {
         return Email;
     }
+       public Date getBD()
+    {
+        return Birthday;
+    }
+    
     public String getWebsite()
     {
         return WebSite;
     }
-    public Date getBD()
-    {
-        return Birthday;
-    }
-     public String getAddress()
-    {
-        return Address;
-    }
+ 
       public String getProfession()
     {
         return Profession;

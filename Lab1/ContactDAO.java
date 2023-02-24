@@ -6,83 +6,53 @@ package jdbcone;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Scanner;
 
 public class ContactDAO {
-
-    private String DRIVER = "com.mysql.cj.jdbc.Driver";
-    private String URL = "jdbc:mysql://localhost:3306/addressbook";
-    private String USER = "root";
-    private String PASSWORD = "root";
+    private final String URL = "jdbc:mysql://localhost:3306/addressbook";
+    private final String USER = "root";
+    private final String PASSWORD = "root";
     private boolean conflag = false;
-    private Connection con;
+    private Connection c;
 
-    public boolean Connect() {
-        try {
-            Class.forName(DRIVER);
-            con = DriverManager.getConnection(URL, USER, PASSWORD);
+    public Connection Connect() throws SQLException {
 
-            if (con != null) {
-                conflag = true;
-                return true;
+        conflag = true;
+        c = DriverManager.getConnection(URL, USER, PASSWORD);
+        System.out.println("Connection Established");
+        return c;
 
-            }
-        } catch (SQLException se) {
-            System.out.println("error");
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ContactDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return false;
     }
 
-    public List<ContactPerson> getContacts() {
-        String sql = "Select * from contact";
-        List<ContactPerson> list = new ArrayList<>();
-        try {
-            if (Connect()) {
-                Statement stmt = con.createStatement();
-                ResultSet rs = stmt.executeQuery(sql);
-                while (rs.next()) {
-                    ContactPerson p = createContactPerson(rs);
-                    list.add(p);
-                }
-                rs.close();
-                stmt.close();
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return list;
-    }
+    public ArrayList<ContactPerson> Select() {
 
-    private ContactPerson createContactPerson(ResultSet rs) {
-        ContactPerson p = new ContactPerson();
+        ArrayList<ContactPerson> arr = new ArrayList();
+
         try {
-            p.setId(rs.getInt("ID"));
-            p.setName(rs.getString("Name"));
-            p.setNickName(rs.getString("NickName"));
-            p.setAddress(rs.getString("address"));
-            p.setHomePhone(rs.getString("home_phone"));
-            p.setWorkPhone(rs.getString("work_phone"));
-            p.setCellPhone(rs.getString("cell_phone"));
-            p.setEmail(rs.getString("email"));
-            p.setBD(rs.getDate("birthday"));
-            p.setWebSite(rs.getString("web_site"));
-            p.setProfession(rs.getString("profession"));
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+            String query = "SELECT * FROM contact";
+            Statement stmt2 = c.createStatement();
+            ResultSet r = stmt2.executeQuery(query);
+            while (r.next()) {
+                ContactPerson p = new ContactPerson(r.getInt("id"), r.getString("name"), r.getString("nick_name"), r.getString("address"), r.getString("home_phone"), r.getString("work_phone"), r.getString("cell_phone"), r.getString("email"), r.getDate("birthday"),
+                        r.getString("web_site"),
+                        r.getString("profession")
+                );
+
+                arr.add(p);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
-        return p;
+
+        return arr;
     }
 
     public void Insert(ContactPerson newp) {
-        if (Connect()) {
+        if (conflag) {
             try {
-                String sql = "INSERT INTO contact(id, name, nick_name, address, home_phone, work_phone, cell_phone, email, birthday, web_site, profession) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
-                PreparedStatement newstmt = con.prepareStatement(sql);
+                String query = "INSERT INTO contact(id, name, nick_name, address, home_phone, work_phone, cell_phone, email, birthday, web_site, profession) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
+                PreparedStatement newstmt = c.prepareStatement(query);
                 newstmt.setInt(1, newp.getId());
                 newstmt.setString(2, newp.getName());
                 newstmt.setString(3, newp.getNickName());
@@ -95,19 +65,73 @@ public class ContactDAO {
                 newstmt.setString(10, newp.getWebsite());
                 newstmt.setString(11, newp.getProfession());
                 newstmt.execute();
+                System.out.println("Row Inserted!");
 
             } catch (SQLException ex) {
-                Logger.getLogger(ContactDAO.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println(ex.getMessage());
+            }
+        }
+    }
+
+    public void Update() {
+        Statement s;
+        if (conflag) {
+            Scanner s1 = new Scanner(System.in);
+            System.out.println("Enter Column Name to be Updated in (id, name, nick_name, address, home_phone, work_phone, cell_phone, email, birthday, web_site, profession): ");
+            String UpdateColName = s1.nextLine();
+            Scanner s2 = new Scanner(System.in);
+            System.out.println("Enter Column Value you want to update: ");
+            String UpdateColValue = s2.nextLine();
+            Scanner s3 = new Scanner(System.in);
+            System.out.println("Enter Column Name you want to update in (id, name, nick_name, address, home_phone, work_phone, cell_phone, email, birthday, web_site, profession)");
+            String ColName = s3.nextLine();
+            Scanner s4 = new Scanner(System.in);
+            System.out.println("Enter Column Value to be Updated: ");
+            String ColValue = s4.nextLine();
+
+            try {
+
+                String uquery = "UPDATE contact set " + UpdateColName + "='" + UpdateColValue + "' where " + ColName + "='" + ColValue + "'";
+                s = c.createStatement();
+                s.execute(uquery);
+                System.out.println("Row Updated!");
+
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    public void DeletefromTable() {
+        Statement s;
+        if (conflag) {
+
+            Scanner colName = new Scanner(System.in);
+            System.out.println("Enter Column Name you want to delete in (id, name, nick_name, address, home_phone, work_phone, cell_phone, email, birthday, web_site, profession)");
+            String col = colName.nextLine();
+            Scanner colValue = new Scanner(System.in);
+            System.out.println("Enter Column Value to be deleted: ");
+            String value = colValue.nextLine();
+
+            try {
+
+                String uquery = "DELETE FROM contact WHERE " + col + "='" + value + "' ";
+                s = c.createStatement();
+                s.execute(uquery);
+                System.out.println("Row Deleted!");
+
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
 
     public void closeConnection() {
         try {
-            con.close();
+            c.close();
             conflag = false;
         } catch (SQLException ex) {
-            Logger.getLogger(ContactDAO.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
         }
     }
 }
